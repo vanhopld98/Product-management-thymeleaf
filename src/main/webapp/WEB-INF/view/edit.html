@@ -11,7 +11,7 @@
         <h3>Edit Product</h3>
     </div>
     <div class="card-body">
-        <form method="post" th:object="${product}">
+        <form method="post" th:object="${product}" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="name" class="form-label">Name Product</label>
                 <input type="text" class="form-control" id="name" th:field="*{name}">
@@ -23,6 +23,10 @@
             <div class="mb-3">
                 <label for="color" class="form-label">Color</label>
                 <input type="text" class="form-control" id="color" th:field="*{color}">
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image</label>
+                <input type="file" class="form-control" id="image" th:field="*{image}">
             </div>
             <button type="submit" class="btn btn-primary">Create</button>
             <a href="/" class="btn btn-outline-danger">Cancel</a>

@@ -1,18 +1,27 @@
 package com.codegym.controller;
 
 import com.codegym.model.Product;
+import com.codegym.model.ProductForm;
 import com.codegym.service.IProductService;
 import com.codegym.service.ProductService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 public class ProductController {
     private IProductService productService = new ProductService();
+
+    @Value("${file-upload}")
+    private String fileUpload;
 
     @GetMapping("")
     public String index(@RequestParam(name = "q", required = false) String q, Model model) {
@@ -27,13 +36,21 @@ public class ProductController {
     }
 
     @GetMapping("/create")
-    public String crate(Model model) {
+    public String create(Model model) {
         model.addAttribute("product", new Product());
         return "/create";
     }
 
     @PostMapping("/create")
-    public String create(Product product) {
+    public String create(@ModelAttribute ProductForm productForm) {
+        MultipartFile multipartFile = productForm.getImage();
+        String fileName = multipartFile.getOriginalFilename();
+        try {
+            FileCopyUtils.copy(productForm.getImage().getBytes(), new File(fileUpload + fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Product product = new Product(productForm.getId(), productForm.getName(), productForm.getPrice(), productForm.getColor(), fileName);
         product.setId((int) (Math.random() * 100));
         productService.save(product);
         return "redirect:/";
@@ -47,9 +64,17 @@ public class ProductController {
     }
 
     @PostMapping("/edit/{id}")
-    public ModelAndView edit(@PathVariable int id, @ModelAttribute Product product) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/");
+    public ModelAndView edit(@PathVariable int id, @ModelAttribute ProductForm productForm) {
+        MultipartFile multipartFile = productForm.getImage();
+        String fileName = multipartFile.getOriginalFilename();
+        try {
+            FileCopyUtils.copy(productForm.getImage().getBytes(), new File(fileUpload + fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Product product = new Product(id, productForm.getName(), productForm.getPrice(), productForm.getColor(), fileName);
         productService.update(id, product);
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
         return modelAndView;
     }
 

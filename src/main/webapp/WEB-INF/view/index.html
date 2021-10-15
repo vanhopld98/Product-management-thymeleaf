@@ -39,6 +39,7 @@
                 <th scope="col">Name</th>
                 <th scope="col">Price</th>
                 <th scope="col">Color</th>
+                <th scope="col">Image</th>
                 <th scope="col" colspan="3">Action</th>
             </tr>
             </thead>
@@ -48,6 +49,7 @@
                 <td th:text="${row.name}"></td>
                 <td th:text="${row.price}"></td>
                 <td th:text="${row.color}"></td>
+                <td><img th:src="@{'/image/'+${row.image}}" alt="image" width="192" height="108"></td>
                 <td>
                     <a th:href="@{/view/{id}(id=${row.id})}" class="btn btn-info">View</a>
                     <a th:href="@{/edit/{id}(id=${row.id})}" class="btn btn-success">Edit</a>
